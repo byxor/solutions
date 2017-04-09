@@ -4,4 +4,4 @@
     (let [sequence (fibonacci_sequence (- n 1))]
       (conj
         sequence
-        (+ (last sequence) (nth sequence (- (count sequence) 2)))))))
+        (+ (last sequence) (last (butlast sequence)))))))
