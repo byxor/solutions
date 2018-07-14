@@ -5,7 +5,6 @@ import (
 )
 
 var height, width, numBricks int
-var bricks [10000]int
 
 var usedWidth, usedHeight int
 
@@ -15,11 +14,9 @@ func main() {
 	fmt.Scan(&numBricks)
 
 	for i := 0; i < numBricks; i++ {
-		fmt.Scan(&bricks[i])
-	}
-
-	for i := 0; i < numBricks; i++ {
-		usedWidth += bricks[i] // lay a brick
+		var brick int
+		fmt.Scan(&brick)
+		usedWidth += brick // lay a brick
 
 		if usedWidth == width { // row is complete
 			usedWidth = 0
