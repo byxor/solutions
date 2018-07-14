@@ -5,8 +5,8 @@ import (
 )
 
 var height, width, numBricks int
-
 var usedWidth, usedHeight int
+var brick int
 
 func main() {
 	fmt.Scan(&height)
@@ -14,7 +14,6 @@ func main() {
 	fmt.Scan(&numBricks)
 
 	for i := 0; i < numBricks; i++ {
-		var brick int
 		fmt.Scan(&brick)
 		usedWidth += brick // lay a brick
 
