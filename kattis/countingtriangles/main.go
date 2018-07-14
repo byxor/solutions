@@ -19,24 +19,27 @@ type triangle struct {
 	a, b, c int
 }
 
+var numSegments int
+var segments []lineSegment
+
+var segboi lineSegment
+
 func main() {
 	for {
-		var numSegments int
 		fmt.Scan(&numSegments)
 
 		if numSegments == 0 {
 			return
 		}
 
-		segments := make([]lineSegment, numSegments)
+		segments = make([]lineSegment, numSegments)
 
 		for i := 0; i < numSegments; i++ {
-			var segment lineSegment
-			segment.id = i
-			segment.intersections = make(map[int]bool)
-			fmt.Scanf("%f %f %f %f\n", &segment.pointA.x, &segment.pointA.y, &segment.pointB.x, &segment.pointB.y)
-			// fmt.Println("ID YO", i, segment)
-			segments[i] = segment
+			segboi = lineSegment{}
+			segboi.id = i
+			segboi.intersections = make(map[int]bool)
+			fmt.Scanf("%f %f %f %f\n", &segboi.pointA.x, &segboi.pointA.y, &segboi.pointB.x, &segboi.pointB.y)
+			segments[i] = segboi
 		}
 
 		calculateIntersections(segments)
@@ -79,7 +82,6 @@ func main() {
 						continue
 					}
 
-					// fmt.Println("\nFound triangle between\n", segments[id0], "\n", segments[id1], "\n", segments[id2], "\n", "")
 					triangles[triangle{id0, id1, id2}] = true
 				}
 			}
@@ -100,8 +102,6 @@ func calculateIntersections(segments []lineSegment) {
 			if segmentA.id == segmentB.id {
 				continue
 			}
-
-			// fmt.Println(segmentA, segmentB)
 
 			if segmentA.intersects(&segmentB) {
 				continue
