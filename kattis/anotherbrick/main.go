@@ -4,22 +4,22 @@ import (
 	"fmt"
 )
 
+var height, width, numBricks int
+var bricks [10000]int
+
+var usedWidth, usedHeight int
+
 func main() {
-	var height, width, numBricks int
-	fmt.Scanf("%d %d %d\n", &height, &width, &numBricks)
+	fmt.Scan(&height)
+	fmt.Scan(&width)
+	fmt.Scan(&numBricks)
 
-	bricks := make([]int, numBricks)
-	ReadN(bricks, 0, numBricks)
-
-	if width == 0 || height == 0 {
-		fmt.Println("YES")
+	for i := 0; i < numBricks; i++ {
+		fmt.Scan(&bricks[i])
 	}
 
-	usedWidth := 0
-	usedHeight := 0
-
-	for _, brick := range bricks {
-		usedWidth += brick // lay a brick
+	for i := 0; i < numBricks; i++ {
+		usedWidth += bricks[i] // lay a brick
 
 		if usedWidth == width { // row is complete
 			usedWidth = 0
@@ -34,20 +34,4 @@ func main() {
 			return
 		}
 	}
-
-	if usedWidth == 0 && usedHeight == height {
-		fmt.Println("YES")
-	} else {
-		fmt.Println("NO")
-	}
-}
-
-func ReadN(all []int, i, n int) {
-	if n == 0 {
-		return
-	}
-	if m, err := fmt.Scan(&all[i]); m != 1 {
-		panic(err)
-	}
-	ReadN(all, i+1, n-1)
 }
