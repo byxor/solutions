@@ -34,6 +34,8 @@ var px, py, qx, qy, rx, ry real
 
 var id0, id1, id2 identifier
 
+var itIntersects bool
+
 var scanner *bufio.Scanner
 
 var found bool
@@ -70,7 +72,8 @@ func main() {
 				}
 
 				// Store intersection info
-				if intersects() {
+				intersects()
+				if itIntersects {
 					segments[id0].intersections[id1] = true
 					segments[id1].intersections[id0] = true
 				}
@@ -143,7 +146,7 @@ func main() {
 
 // INTERSECTION JUNK
 
-func intersects() bool {
+func intersects() {
 	px = segments[id0].ax
 	py = segments[id0].ay
 	qx = segments[id0].bx
@@ -181,7 +184,8 @@ func intersects() bool {
 	o4 = theOrientation
 
 	if (o1 != o2) && (o3 != o4) {
-		return true
+		itIntersects = true
+		return
 	}
 
 	px = segments[id0].ax
@@ -191,7 +195,8 @@ func intersects() bool {
 	rx = segments[id0].bx
 	ry = segments[id0].by
 	if (o1 == colinear) && onSegment() {
-		return true
+		itIntersects = true
+		return
 	}
 
 	px = segments[id0].ax
@@ -201,7 +206,8 @@ func intersects() bool {
 	rx = segments[id0].bx
 	ry = segments[id0].by
 	if (o2 == colinear) && onSegment() {
-		return true
+		itIntersects = true
+		return
 	}
 
 	px = segments[id1].ax
@@ -211,7 +217,8 @@ func intersects() bool {
 	rx = segments[id1].bx
 	ry = segments[id1].by
 	if (o3 == colinear) && onSegment() {
-		return true
+		itIntersects = true
+		return
 	}
 
 	px = segments[id1].ax
@@ -221,9 +228,11 @@ func intersects() bool {
 	rx = segments[id1].bx
 	ry = segments[id1].by
 	if (o4 == colinear) && onSegment() {
-		return true
+		itIntersects = true
+		return
 	}
-	return false
+
+	itIntersects = false
 }
 
 const (
