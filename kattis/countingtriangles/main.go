@@ -14,6 +14,7 @@ var numTriangles int
 
 var lowId, midId, highId int
 var o1, o2, o3, o4 int
+var val float64
 
 var scanner *bufio.Scanner
 
@@ -162,7 +163,7 @@ func intersects(id0, id1 int) bool {
 }
 
 func orientation(px, py, qx, qy, rx, ry float64) int {
-	val := ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
+	val = ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
 		return colinear
 	} else if val > 0 {
