@@ -53,10 +53,12 @@ func main() {
 
 		// Get initial input
 		scanner.Scan()
-		fmt.Sscanf(scanner.Text(), "%d", &numSegments)
-		if numSegments == 0 {
+
+		if scanner.Text() == "0" {
 			return
 		}
+
+		fmt.Sscanf(scanner.Text(), "%d", &numSegments)
 
 		// Read line segments
 		for id0 = 0; id0 < numSegments; id0++ {
