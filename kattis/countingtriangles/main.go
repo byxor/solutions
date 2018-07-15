@@ -144,27 +144,21 @@ func intersects(id0, id1 identifier) bool {
 	o2 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
 	o3 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
 	o4 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by)
-
 	if (o1 != o2) && (o3 != o4) {
 		return true
 	}
-
 	if (o1 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by) {
 		return true
 	}
-
 	if (o2 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by) {
 		return true
 	}
-
 	if (o3 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by) {
 		return true
 	}
-
 	if (o4 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by) {
 		return true
 	}
-
 	return false
 }
 
