@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 const maxSegments = 50
@@ -18,6 +19,7 @@ type lineSegment struct {
 
 type triangle [3]identifier
 
+var foo int64
 var numSegments identifier
 var segments [maxSegments]lineSegment
 var intersections [maxSegments]map[identifier]byte
@@ -40,6 +42,7 @@ var px, py, qx, qy, rx, ry real
 var id0, id1, id2 identifier
 
 var itIntersects bool
+var itOnSegment bool
 
 var scanner *bufio.Scanner
 
@@ -53,12 +56,12 @@ func main() {
 
 		// Get initial input
 		scanner.Scan()
-
 		if scanner.Text() == "0" {
 			return
 		}
 
-		fmt.Sscanf(scanner.Text(), "%d", &numSegments)
+		foo, _ = strconv.ParseInt(scanner.Text(), 10, 8)
+		numSegments = identifier(foo)
 
 		// Read line segments
 		for id0 = 0; id0 < numSegments; id0++ {
@@ -202,9 +205,12 @@ func intersects() {
 	qy = ays[id1]
 	rx = bxs[id0]
 	ry = bys[id0]
-	if (o1 == colinear) && onSegment() {
-		itIntersects = true
-		return
+	if o1 == colinear {
+		onSegment()
+		if itOnSegment {
+			itIntersects = true
+			return
+		}
 	}
 
 	px = axs[id0]
@@ -213,9 +219,12 @@ func intersects() {
 	qy = bys[id1]
 	rx = bxs[id0]
 	ry = bys[id0]
-	if (o2 == colinear) && onSegment() {
-		itIntersects = true
-		return
+	if o2 == colinear {
+		onSegment()
+		if itOnSegment {
+			itIntersects = true
+			return
+		}
 	}
 
 	px = axs[id1]
@@ -224,9 +233,12 @@ func intersects() {
 	qy = ays[id0]
 	rx = bxs[id1]
 	ry = bys[id1]
-	if (o3 == colinear) && onSegment() {
-		itIntersects = true
-		return
+	if o3 == colinear {
+		onSegment()
+		if itOnSegment {
+			itIntersects = true
+			return
+		}
 	}
 
 	px = axs[id1]
@@ -235,9 +247,12 @@ func intersects() {
 	qy = bys[id0]
 	rx = bxs[id1]
 	ry = bys[id1]
-	if (o4 == colinear) && onSegment() {
-		itIntersects = true
-		return
+	if o4 == colinear {
+		onSegment()
+		if itOnSegment {
+			itIntersects = true
+			return
+		}
 	}
 
 	itIntersects = false
@@ -263,32 +278,32 @@ func orientation() {
 	}
 }
 
-func onSegment() bool {
-	if px <= rx {
-		if qx > rx {
-			return false
-		} else if qx < px {
-			return false
-		}
-	} else {
-		if qx > px {
-			return false
-		} else if qx < rx {
-			return false
-		}
-	}
+func onSegment() {
 	if py > ry {
 		if qy > py {
-			return false
+			itOnSegment = false
 		} else if qy < ry {
-			return false
+			itOnSegment = false
 		}
 	} else {
 		if qy > ry {
-			return false
+			itOnSegment = false
 		} else if qy < py {
-			return false
+			itOnSegment = false
 		}
 	}
-	return true
+	if px <= rx {
+		if qx > rx {
+			itOnSegment = false
+		} else if qx < px {
+			itOnSegment = false
+		}
+	} else {
+		if qx > px {
+			itOnSegment = false
+		} else if qx < rx {
+			itOnSegment = false
+		}
+	}
+	itOnSegment = true
 }
