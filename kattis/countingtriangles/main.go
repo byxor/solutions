@@ -28,7 +28,7 @@ var bys [maxSegments]real
 
 var aTriangle triangle
 var triangles map[triangle]byte
-var numTriangles int
+var numTriangles uint16
 
 var lowId, midId, highId identifier
 var theOrientation ot
