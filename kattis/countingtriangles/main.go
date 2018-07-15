@@ -6,23 +6,28 @@ import (
 	"os"
 )
 
+const maxSegments = 50
+
 type identifier byte
 type real float32
 type ot byte
 
 type lineSegment struct {
-	id             identifier
-	ax, ay, bx, by real
-	intersections  map[identifier]bool
+	id identifier
 }
 
 type triangle [3]identifier
 
 var numSegments identifier
-var segments [50]lineSegment
+var segments [maxSegments]lineSegment
+var intersections [maxSegments]map[identifier]byte
+var axs [maxSegments]real
+var ays [maxSegments]real
+var bxs [maxSegments]real
+var bys [maxSegments]real
 
 var aTriangle triangle
-var triangles map[triangle]bool
+var triangles map[triangle]byte
 var numTriangles int
 
 var lowId, midId, highId identifier
@@ -48,16 +53,17 @@ func main() {
 
 		// Get initial input
 		scanner.Scan()
-		fmt.Sscan(scanner.Text(), &numSegments)
+		fmt.Sscanf(scanner.Text(), "%d", &numSegments)
 		if numSegments == 0 {
 			return
 		}
 
 		// Read line segments
 		for id0 = 0; id0 < numSegments; id0++ {
-			segments[id0] = lineSegment{id: id0, intersections: make(map[identifier]bool)}
+			segments[id0] = lineSegment{id: id0}
+			intersections[id0] = make(map[identifier]byte)
 			scanner.Scan()
-			fmt.Sscanf(scanner.Text(), "%f %f %f %f", &segments[id0].ax, &segments[id0].ay, &segments[id0].bx, &segments[id0].by)
+			fmt.Sscanf(scanner.Text(), "%f %f %f %f", &axs[id0], &ays[id0], &bxs[id0], &bys[id0])
 		}
 
 		// Gather intersection information
@@ -67,33 +73,33 @@ func main() {
 					continue
 				}
 
-				if _, found = segments[id0].intersections[id1]; found {
+				if _, found = intersections[id0][id1]; found {
 					continue
 				}
 
 				// Store intersection info
 				intersects()
 				if itIntersects {
-					segments[id0].intersections[id1] = true
-					segments[id1].intersections[id0] = true
+					intersections[id0][id1] = 0
+					intersections[id1][id0] = 0
 				}
 			}
 		}
 
 		// Search for triangles
-		triangles = make(map[triangle]bool)
+		triangles = make(map[triangle]byte)
 		for id0 = 0; id0 < numSegments; id0++ {
-			for id1, _ = range segments[id0].intersections {
+			for id1, _ = range intersections[id0] {
 				if id0 == id1 {
 					continue
 				}
-				for id2, _ = range segments[id1].intersections {
+				for id2, _ = range intersections[id1] {
 					if id0 == id2 {
 						continue
 					}
 
 					// doesn't form a triangle
-					if _, found = segments[id0].intersections[id2]; !found {
+					if _, found = intersections[id0][id2]; !found {
 						continue
 					}
 
@@ -134,7 +140,7 @@ func main() {
 						continue
 					}
 
-					triangles[aTriangle] = true
+					triangles[aTriangle] = 0
 					numTriangles++
 				}
 			}
@@ -147,39 +153,39 @@ func main() {
 // INTERSECTION JUNK
 
 func intersects() {
-	px = segments[id0].ax
-	py = segments[id0].ay
-	qx = segments[id0].bx
-	qy = segments[id0].by
-	rx = segments[id1].ax
-	ry = segments[id1].ay
+	px = axs[id0]
+	py = ays[id0]
+	qx = bxs[id0]
+	qy = bys[id0]
+	rx = axs[id1]
+	ry = ays[id1]
 	orientation()
 	o1 = theOrientation
 
-	px = segments[id0].ax
-	py = segments[id0].ay
-	qx = segments[id0].bx
-	qy = segments[id0].by
-	rx = segments[id1].bx
-	ry = segments[id1].by
+	px = axs[id0]
+	py = ays[id0]
+	qx = bxs[id0]
+	qy = bys[id0]
+	rx = bxs[id1]
+	ry = bys[id1]
 	orientation()
 	o2 = theOrientation
 
-	px = segments[id1].ax
-	py = segments[id1].ay
-	qx = segments[id1].bx
-	qy = segments[id1].by
-	rx = segments[id0].ax
-	ry = segments[id0].ay
+	px = axs[id1]
+	py = ays[id1]
+	qx = bxs[id1]
+	qy = bys[id1]
+	rx = axs[id0]
+	ry = ays[id0]
 	orientation()
 	o3 = theOrientation
 
-	px = segments[id1].ax
-	py = segments[id1].ay
-	qx = segments[id1].bx
-	qy = segments[id1].by
-	rx = segments[id0].bx
-	ry = segments[id0].by
+	px = axs[id1]
+	py = ays[id1]
+	qx = bxs[id1]
+	qy = bys[id1]
+	rx = bxs[id0]
+	ry = bys[id0]
 	orientation()
 	o4 = theOrientation
 
@@ -188,45 +194,45 @@ func intersects() {
 		return
 	}
 
-	px = segments[id0].ax
-	py = segments[id0].ay
-	qx = segments[id1].ax
-	qy = segments[id1].ay
-	rx = segments[id0].bx
-	ry = segments[id0].by
+	px = axs[id0]
+	py = ays[id0]
+	qx = axs[id1]
+	qy = ays[id1]
+	rx = bxs[id0]
+	ry = bys[id0]
 	if (o1 == colinear) && onSegment() {
 		itIntersects = true
 		return
 	}
 
-	px = segments[id0].ax
-	py = segments[id0].ay
-	qx = segments[id1].bx
-	qy = segments[id1].by
-	rx = segments[id0].bx
-	ry = segments[id0].by
+	px = axs[id0]
+	py = ays[id0]
+	qx = bxs[id1]
+	qy = bys[id1]
+	rx = bxs[id0]
+	ry = bys[id0]
 	if (o2 == colinear) && onSegment() {
 		itIntersects = true
 		return
 	}
 
-	px = segments[id1].ax
-	py = segments[id1].ay
-	qx = segments[id0].ax
-	qy = segments[id0].ay
-	rx = segments[id1].bx
-	ry = segments[id1].by
+	px = axs[id1]
+	py = ays[id1]
+	qx = axs[id0]
+	qy = ays[id0]
+	rx = bxs[id1]
+	ry = bys[id1]
 	if (o3 == colinear) && onSegment() {
 		itIntersects = true
 		return
 	}
 
-	px = segments[id1].ax
-	py = segments[id1].ay
-	qx = segments[id0].bx
-	qy = segments[id0].by
-	rx = segments[id1].bx
-	ry = segments[id1].by
+	px = axs[id1]
+	py = ays[id1]
+	qx = bxs[id0]
+	qy = bys[id0]
+	rx = bxs[id1]
+	ry = bys[id1]
 	if (o4 == colinear) && onSegment() {
 		itIntersects = true
 		return
