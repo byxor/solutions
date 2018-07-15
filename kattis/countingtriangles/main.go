@@ -12,9 +12,11 @@ var numTriangles int
 
 func main() {
 	for {
+		// Set initial variables
 		numTriangles = 0
-		fmt.Scan(&numSegments)
 
+		// Get initial input
+		fmt.Scan(&numSegments)
 		if numSegments == 0 {
 			return
 		}
@@ -22,29 +24,28 @@ func main() {
 		// Read line segments
 		for i := 0; i < numSegments; i++ {
 			segments[i] = lineSegment{id: i, intersections: make(map[int]bool)}
-			fmt.Scanf("%f %f %f %f\n", &segments[i].pointA.x, &segments[i].pointA.y, &segments[i].pointB.x, &segments[i].pointB.y)
+			fmt.Scanf("%f %f %f %f\n", &segments[i].ax, &segments[i].ay, &segments[i].bx, &segments[i].by)
 		}
 
 		// Gather intersection information
 		for id0 := 0; id0 < numSegments; id0++ {
-			segmentA := segments[id0]
 			for id1 := 0; id1 < numSegments; id1++ {
-				segmentB := segments[id1]
-				if segmentA.id == segmentB.id {
+				if id0 == id1 {
 					continue
 				}
 
-				if _, found := segmentA.intersections[segmentB.id]; found {
+				if _, found := segments[id0].intersections[id1]; found {
 					continue
 				}
 
-				if intersects(segmentA, segmentB) {
-					segmentA.intersections[segmentB.id] = true
-					segmentB.intersections[segmentA.id] = true
+				if intersects(segments[id0], segments[id1]) {
+					segments[id0].intersections[id1] = true
+					segments[id1].intersections[id0] = true
 				}
 			}
 		}
 
+		// Search for triangles
 		triangles = make(map[triangle]bool)
 		for id0 := 0; id0 < numSegments; id0++ {
 			segment := segments[id0]
@@ -98,10 +99,9 @@ type point struct {
 }
 
 type lineSegment struct {
-	id            int
-	pointA        point
-	pointB        point
-	intersections map[int]bool
+	id             int
+	ax, ay, bx, by float64
+	intersections  map[int]bool
 }
 
 type triangle struct {
@@ -117,36 +117,36 @@ const (
 )
 
 func intersects(segmentA, segmentB lineSegment) bool {
-	o1 := orientation(segmentA.pointA, segmentA.pointB, segmentB.pointA)
-	o2 := orientation(segmentA.pointA, segmentA.pointB, segmentB.pointB)
-	o3 := orientation(segmentB.pointA, segmentB.pointB, segmentA.pointA)
-	o4 := orientation(segmentB.pointA, segmentB.pointB, segmentA.pointB)
+	o1 := orientation(segmentA.ax, segmentA.ay, segmentA.bx, segmentA.by, segmentB.ax, segmentB.ay)
+	o2 := orientation(segmentA.ax, segmentA.ay, segmentA.bx, segmentA.by, segmentB.bx, segmentB.by)
+	o3 := orientation(segmentB.ax, segmentB.ay, segmentB.bx, segmentB.by, segmentA.ax, segmentA.ay)
+	o4 := orientation(segmentB.ax, segmentB.ay, segmentB.bx, segmentB.by, segmentA.bx, segmentA.by)
 
 	if (o1 != o2) && (o3 != o4) {
 		return true
 	}
 
-	if (o1 == colinear) && onSegment(segmentA.pointA, segmentB.pointA, segmentA.pointB) {
+	if (o1 == colinear) && onSegment(segmentA.ax, segmentA.ay, segmentB.ax, segmentB.ay, segmentA.bx, segmentA.by) {
 		return true
 	}
 
-	if (o2 == colinear) && onSegment(segmentA.pointA, segmentB.pointB, segmentA.pointB) {
+	if (o2 == colinear) && onSegment(segmentA.ax, segmentA.ay, segmentB.bx, segmentB.by, segmentA.bx, segmentA.by) {
 		return true
 	}
 
-	if (o3 == colinear) && onSegment(segmentB.pointA, segmentA.pointA, segmentB.pointB) {
+	if (o3 == colinear) && onSegment(segmentB.ax, segmentB.ay, segmentA.ax, segmentA.ay, segmentB.bx, segmentB.by) {
 		return true
 	}
 
-	if (o4 == colinear) && onSegment(segmentB.pointA, segmentA.pointB, segmentB.pointB) {
+	if (o4 == colinear) && onSegment(segmentB.ax, segmentB.ay, segmentA.bx, segmentA.by, segmentB.bx, segmentB.by) {
 		return true
 	}
 
 	return false
 }
 
-func orientation(p, q, r point) int {
-	val := ((q.y - p.y) * (r.x - q.x)) - ((q.x - p.x) * (r.y - q.y))
+func orientation(px, py, qx, qy, rx, ry float64) int {
+	val := ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
 		return colinear
 	}
@@ -156,8 +156,8 @@ func orientation(p, q, r point) int {
 	return counterclockwise
 }
 
-func onSegment(p, q, r point) bool {
-	if (q.x <= max(p.x, r.x)) && (q.x >= min(p.x, r.x)) && (q.y <= max(p.y, r.y)) && (q.y >= min(p.y, r.y)) {
+func onSegment(px, py, qx, qy, rx, ry float64) bool {
+	if (qx <= max(px, rx)) && (qx >= min(px, rx)) && (qy <= max(py, ry)) && (qy >= min(py, ry)) {
 		return true
 	}
 	return false
