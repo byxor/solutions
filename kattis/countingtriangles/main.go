@@ -199,13 +199,13 @@ func intersects() {
 		return
 	}
 
-	px = axs[id0]
-	py = ays[id0]
-	qx = axs[id1]
-	qy = ays[id1]
-	rx = bxs[id0]
-	ry = bys[id0]
 	if o1 == colinear {
+		px = axs[id0]
+		py = ays[id0]
+		qx = axs[id1]
+		qy = ays[id1]
+		rx = bxs[id0]
+		ry = bys[id0]
 		onSegment()
 		if itOnSegment {
 			itIntersects = true
@@ -213,13 +213,13 @@ func intersects() {
 		}
 	}
 
-	px = axs[id0]
-	py = ays[id0]
-	qx = bxs[id1]
-	qy = bys[id1]
-	rx = bxs[id0]
-	ry = bys[id0]
 	if o2 == colinear {
+		px = axs[id0]
+		py = ays[id0]
+		qx = bxs[id1]
+		qy = bys[id1]
+		rx = bxs[id0]
+		ry = bys[id0]
 		onSegment()
 		if itOnSegment {
 			itIntersects = true
@@ -227,13 +227,13 @@ func intersects() {
 		}
 	}
 
-	px = axs[id1]
-	py = ays[id1]
-	qx = axs[id0]
-	qy = ays[id0]
-	rx = bxs[id1]
-	ry = bys[id1]
 	if o3 == colinear {
+		px = axs[id1]
+		py = ays[id1]
+		qx = axs[id0]
+		qy = ays[id0]
+		rx = bxs[id1]
+		ry = bys[id1]
 		onSegment()
 		if itOnSegment {
 			itIntersects = true
@@ -241,13 +241,13 @@ func intersects() {
 		}
 	}
 
-	px = axs[id1]
-	py = ays[id1]
-	qx = bxs[id0]
-	qy = bys[id0]
-	rx = bxs[id1]
-	ry = bys[id1]
 	if o4 == colinear {
+		px = axs[id1]
+		py = ays[id1]
+		qx = bxs[id0]
+		qy = bys[id0]
+		rx = bxs[id1]
+		ry = bys[id1]
 		onSegment()
 		if itOnSegment {
 			itIntersects = true
