@@ -4,35 +4,24 @@ import (
 	"fmt"
 )
 
-type point struct {
-	x, y float64
-}
-
-type lineSegment struct {
-	id            int
-	pointA        point
-	pointB        point
-	intersections map[int]bool
-}
-
-type triangle struct {
-	a, b, c int
-}
-
 var numSegments int
-var segments []lineSegment
+var segments [50]lineSegment
 
 var segboi lineSegment
 
+var triangles map[triangle]bool
+var numTriangles int
+
 func main() {
 	for {
+		numTriangles = 0
 		fmt.Scan(&numSegments)
 
 		if numSegments == 0 {
 			return
 		}
 
-		segments = make([]lineSegment, numSegments)
+		// segments = make([]lineSegment, numSegments)
 
 		for i := 0; i < numSegments; i++ {
 			segboi = lineSegment{}
@@ -42,13 +31,15 @@ func main() {
 			segments[i] = segboi
 		}
 
-		for _, segmentA := range segments {
-			for _, segmentB := range segments {
+		for id0 := 0; id0 < numSegments; id0++ {
+			segmentA := segments[id0]
+			for id1 := 0; id1 < numSegments; id1++ {
+				segmentB := segments[id1]
 				if segmentA.id == segmentB.id {
 					continue
 				}
 
-				if segmentA.intersects(&segmentB) {
+				if _, found := segmentA.intersections[segmentB.id]; found {
 					continue
 				}
 
@@ -59,13 +50,13 @@ func main() {
 			}
 		}
 
-		triangles := make(map[triangle]bool)
-		numTriangles := 0
+		triangles = make(map[triangle]bool)
 		for id0 := 0; id0 < numSegments; id0++ {
 			segment := segments[id0]
 			for id1, _ := range segment.intersections {
 				for id2, _ := range segments[id1].intersections {
-					if !segments[id2].intersects(&segment) {
+
+					if _, found := segments[id2].intersections[segment.id]; !found {
 						continue
 					}
 
@@ -107,9 +98,19 @@ func main() {
 	}
 }
 
-func (ls *lineSegment) intersects(other *lineSegment) bool {
-	_, found := ls.intersections[other.id]
-	return found
+type point struct {
+	x, y float64
+}
+
+type lineSegment struct {
+	id            int
+	pointA        point
+	pointB        point
+	intersections map[int]bool
+}
+
+type triangle struct {
+	a, b, c int
 }
 
 // INTERSECTION JUNK
