@@ -20,6 +20,7 @@ type triangle [3]identifier
 var numSegments identifier
 var segments [50]lineSegment
 
+var aTriangle triangle
 var triangles map[triangle]bool
 var numTriangles int
 
@@ -80,12 +81,12 @@ func main() {
 					continue
 				}
 				for id2, _ = range segments[id1].intersections {
-
-					if _, found = segments[id2].intersections[id0]; !found {
+					if id0 == id2 {
 						continue
 					}
 
-					if id0 == id2 {
+					// doesn't form a triangle
+					if _, found = segments[id0].intersections[id2]; !found {
 						continue
 					}
 
@@ -120,11 +121,13 @@ func main() {
 						}
 					}
 
-					if _, found = triangles[triangle{lowId, midId, highId}]; found {
+					aTriangle = triangle{lowId, midId, highId}
+
+					if _, found = triangles[aTriangle]; found {
 						continue
 					}
 
-					triangles[triangle{lowId, midId, highId}] = true
+					triangles[aTriangle] = true
 					numTriangles++
 				}
 			}
