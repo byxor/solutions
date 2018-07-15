@@ -7,8 +7,6 @@ import (
 var numSegments int
 var segments [50]lineSegment
 
-var segboi lineSegment
-
 var triangles map[triangle]bool
 var numTriangles int
 
@@ -21,16 +19,13 @@ func main() {
 			return
 		}
 
-		// segments = make([]lineSegment, numSegments)
-
+		// Read line segments
 		for i := 0; i < numSegments; i++ {
-			segboi = lineSegment{}
-			segboi.id = i
-			segboi.intersections = make(map[int]bool)
-			fmt.Scanf("%f %f %f %f\n", &segboi.pointA.x, &segboi.pointA.y, &segboi.pointB.x, &segboi.pointB.y)
-			segments[i] = segboi
+			segments[i] = lineSegment{id: i, intersections: make(map[int]bool)}
+			fmt.Scanf("%f %f %f %f\n", &segments[i].pointA.x, &segments[i].pointA.y, &segments[i].pointB.x, &segments[i].pointB.y)
 		}
 
+		// Gather intersection information
 		for id0 := 0; id0 < numSegments; id0++ {
 			segmentA := segments[id0]
 			for id1 := 0; id1 < numSegments; id1++ {
@@ -43,7 +38,7 @@ func main() {
 					continue
 				}
 
-				if intersects(&segmentA, &segmentB) {
+				if intersects(segmentA, segmentB) {
 					segmentA.intersections[segmentB.id] = true
 					segmentB.intersections[segmentA.id] = true
 				}
@@ -121,7 +116,7 @@ const (
 	counterclockwise
 )
 
-func intersects(segmentA, segmentB *lineSegment) bool {
+func intersects(segmentA, segmentB lineSegment) bool {
 	o1 := orientation(segmentA.pointA, segmentA.pointB, segmentB.pointA)
 	o2 := orientation(segmentA.pointA, segmentA.pointB, segmentB.pointB)
 	o3 := orientation(segmentB.pointA, segmentB.pointB, segmentA.pointA)
