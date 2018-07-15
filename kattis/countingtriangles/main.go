@@ -7,10 +7,11 @@ import (
 )
 
 type identifier byte
+type real float64
 
 type lineSegment struct {
 	id             identifier
-	ax, ay, bx, by float64
+	ax, ay, bx, by real
 	intersections  map[identifier]bool
 }
 
@@ -24,7 +25,7 @@ var numTriangles int
 
 var lowId, midId, highId identifier
 var o1, o2, o3, o4 int
-var val float64
+var val real
 
 var id0, id1, id2 identifier
 
@@ -74,11 +75,11 @@ func main() {
 		// Search for triangles
 		triangles = make(map[triangle]bool)
 		for id0 = 0; id0 < numSegments; id0++ {
-			for id1, _ := range segments[id0].intersections {
+			for id1, _ = range segments[id0].intersections {
 				if id0 == id1 {
 					continue
 				}
-				for id2, _ := range segments[id1].intersections {
+				for id2, _ = range segments[id1].intersections {
 
 					if _, found = segments[id2].intersections[id0]; !found {
 						continue
@@ -170,7 +171,7 @@ func intersects(id0, id1 identifier) bool {
 	return false
 }
 
-func orientation(px, py, qx, qy, rx, ry float64) int {
+func orientation(px, py, qx, qy, rx, ry real) int {
 	val = ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
 		return colinear
@@ -181,9 +182,9 @@ func orientation(px, py, qx, qy, rx, ry float64) int {
 	}
 }
 
-func onSegment(px, py, qx, qy, rx, ry float64) bool {
+func onSegment(px, py, qx, qy, rx, ry real) bool {
 
-	var highpxrx, lowpxrx float64
+	var highpxrx, lowpxrx real
 	if px > rx {
 		highpxrx = px
 		lowpxrx = rx
@@ -198,7 +199,7 @@ func onSegment(px, py, qx, qy, rx, ry float64) bool {
 		return false
 	}
 
-	var highpyry, lowpyry float64
+	var highpyry, lowpyry real
 	if py > ry {
 		highpyry = py
 		lowpyry = ry
