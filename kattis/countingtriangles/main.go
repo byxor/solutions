@@ -136,12 +136,6 @@ func main() {
 
 // INTERSECTION JUNK
 
-const (
-	colinear = iota
-	clockwise
-	counterclockwise
-)
-
 func intersects(id0, id1 identifier) bool {
 	o1 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
 	o2 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
@@ -171,6 +165,12 @@ func intersects(id0, id1 identifier) bool {
 	return false
 }
 
+const (
+	colinear = iota
+	clockwise
+	counterclockwise
+)
+
 func orientation(px, py, qx, qy, rx, ry real) int {
 	val = ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
@@ -183,37 +183,31 @@ func orientation(px, py, qx, qy, rx, ry real) int {
 }
 
 func onSegment(px, py, qx, qy, rx, ry real) bool {
-
-	var highpxrx, lowpxrx real
 	if px > rx {
-		highpxrx = px
-		lowpxrx = rx
+		if qx > px {
+			return false
+		} else if qx < rx {
+			return false
+		}
 	} else {
-		highpxrx = rx
-		lowpxrx = px
+		if qx > rx {
+			return false
+		} else if qx < px {
+			return false
+		}
 	}
-
-	if qx > highpxrx {
-		return false
-	} else if qx < lowpxrx {
-		return false
-	}
-
-	var highpyry, lowpyry real
 	if py > ry {
-		highpyry = py
-		lowpyry = ry
+		if qy > py {
+			return false
+		} else if qy < ry {
+			return false
+		}
 	} else {
-		highpyry = ry
-		lowpyry = py
+		if qy > ry {
+			return false
+		} else if qy < py {
+			return false
+		}
 	}
-
-	if qy > highpyry {
-		return false
-	} else if qy < lowpyry {
-		return false
-	}
-
 	return true
-
 }
