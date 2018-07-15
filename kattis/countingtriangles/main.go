@@ -7,8 +7,10 @@ import (
 var numSegments int
 var segments [50]lineSegment
 
-var triangles map[triangle]bool
+var triangles map[[3]int]bool
 var numTriangles int
+
+var lowId, midId, highId int
 
 func main() {
 	for {
@@ -38,6 +40,7 @@ func main() {
 					continue
 				}
 
+				// Store intersection info
 				if intersects(id0, id1) {
 					segments[id0].intersections[id1] = true
 					segments[id1].intersections[id0] = true
@@ -46,13 +49,12 @@ func main() {
 		}
 
 		// Search for triangles
-		triangles = make(map[triangle]bool)
+		triangles = make(map[[3]int]bool)
 		for id0 := 0; id0 < numSegments; id0++ {
-			segment := segments[id0]
-			for id1, _ := range segment.intersections {
+			for id1, _ := range segments[id0].intersections {
 				for id2, _ := range segments[id1].intersections {
 
-					if _, found := segments[id2].intersections[segment.id]; !found {
+					if _, found := segments[id2].intersections[id0]; !found {
 						continue
 					}
 
@@ -60,31 +62,41 @@ func main() {
 						continue
 					}
 
-					if _, found := triangles[triangle{id0, id1, id2}]; found {
+					if id0 < id1 {
+						if id1 < id2 {
+							lowId = id0
+							midId = id1
+							highId = id2
+						} else if id0 < id2 {
+							lowId = id0
+							midId = id2
+							highId = id1
+						} else {
+							lowId = id2
+							midId = id0
+							highId = id1
+						}
+					} else {
+						if id0 < id2 {
+							lowId = id1
+							midId = id0
+							highId = id2
+						} else if id2 > id1 {
+							lowId = id1
+							midId = id2
+							highId = id0
+						} else {
+							lowId = id2
+							midId = id1
+							highId = id0
+						}
+					}
+
+					if _, found := triangles[[3]int{lowId, midId, highId}]; found {
 						continue
 					}
 
-					if _, found := triangles[triangle{id0, id2, id1}]; found {
-						continue
-					}
-
-					if _, found := triangles[triangle{id1, id2, id0}]; found {
-						continue
-					}
-
-					if _, found := triangles[triangle{id1, id0, id2}]; found {
-						continue
-					}
-
-					if _, found := triangles[triangle{id2, id0, id1}]; found {
-						continue
-					}
-
-					if _, found := triangles[triangle{id2, id1, id0}]; found {
-						continue
-					}
-
-					triangles[triangle{id0, id1, id2}] = true
+					triangles[[3]int{lowId, midId, highId}] = true
 					numTriangles++
 				}
 			}
@@ -98,10 +110,6 @@ type lineSegment struct {
 	id             int
 	ax, ay, bx, by float64
 	intersections  map[int]bool
-}
-
-type triangle struct {
-	a, b, c int
 }
 
 // INTERSECTION JUNK
