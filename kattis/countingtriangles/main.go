@@ -8,6 +8,7 @@ import (
 
 type identifier byte
 type real float32
+type ot byte
 
 type lineSegment struct {
 	id             identifier
@@ -25,8 +26,11 @@ var triangles map[triangle]bool
 var numTriangles int
 
 var lowId, midId, highId identifier
-var o1, o2, o3, o4 int
+var theOrientation ot
+var o1, o2, o3, o4 ot
 var val real
+
+var px, py, qx, qy, rx, ry real
 
 var id0, id1, id2 identifier
 
@@ -66,7 +70,7 @@ func main() {
 				}
 
 				// Store intersection info
-				if intersects(id0, id1) {
+				if intersects() {
 					segments[id0].intersections[id1] = true
 					segments[id1].intersections[id0] = true
 				}
@@ -139,24 +143,87 @@ func main() {
 
 // INTERSECTION JUNK
 
-func intersects(id0, id1 identifier) bool {
-	o1 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
-	o2 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
-	o3 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
-	o4 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by)
+func intersects() bool {
+	px = segments[id0].ax
+	py = segments[id0].ay
+	qx = segments[id0].bx
+	qy = segments[id0].by
+	rx = segments[id1].ax
+	ry = segments[id1].ay
+	orientation()
+	o1 = theOrientation
+
+	px = segments[id0].ax
+	py = segments[id0].ay
+	qx = segments[id0].bx
+	qy = segments[id0].by
+	rx = segments[id1].bx
+	ry = segments[id1].by
+	orientation()
+	o2 = theOrientation
+
+	px = segments[id1].ax
+	py = segments[id1].ay
+	qx = segments[id1].bx
+	qy = segments[id1].by
+	rx = segments[id0].ax
+	ry = segments[id0].ay
+	orientation()
+	o3 = theOrientation
+
+	px = segments[id1].ax
+	py = segments[id1].ay
+	qx = segments[id1].bx
+	qy = segments[id1].by
+	rx = segments[id0].bx
+	ry = segments[id0].by
+	orientation()
+	o4 = theOrientation
+
 	if (o1 != o2) && (o3 != o4) {
 		return true
-	} else if (o1 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by) {
-		return true
-	} else if (o2 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by) {
-		return true
-	} else if (o3 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by) {
-		return true
-	} else if (o4 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by) {
-		return true
-	} else {
-		return false
 	}
+
+	px = segments[id0].ax
+	py = segments[id0].ay
+	qx = segments[id1].ax
+	qy = segments[id1].ay
+	rx = segments[id0].bx
+	ry = segments[id0].by
+	if (o1 == colinear) && onSegment() {
+		return true
+	}
+
+	px = segments[id0].ax
+	py = segments[id0].ay
+	qx = segments[id1].bx
+	qy = segments[id1].by
+	rx = segments[id0].bx
+	ry = segments[id0].by
+	if (o2 == colinear) && onSegment() {
+		return true
+	}
+
+	px = segments[id1].ax
+	py = segments[id1].ay
+	qx = segments[id0].ax
+	qy = segments[id0].ay
+	rx = segments[id1].bx
+	ry = segments[id1].by
+	if (o3 == colinear) && onSegment() {
+		return true
+	}
+
+	px = segments[id1].ax
+	py = segments[id1].ay
+	qx = segments[id0].bx
+	qy = segments[id0].by
+	rx = segments[id1].bx
+	ry = segments[id1].by
+	if (o4 == colinear) && onSegment() {
+		return true
+	}
+	return false
 }
 
 const (
@@ -165,18 +232,21 @@ const (
 	counterclockwise
 )
 
-func orientation(px, py, qx, qy, rx, ry real) int {
+func orientation() {
 	val = ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
-		return colinear
+		theOrientation = colinear
+		return
 	} else if val > 0 {
-		return clockwise
+		theOrientation = clockwise
+		return
 	} else {
-		return counterclockwise
+		theOrientation = counterclockwise
+		return
 	}
 }
 
-func onSegment(px, py, qx, qy, rx, ry real) bool {
+func onSegment() bool {
 	if px <= rx {
 		if qx > rx {
 			return false
