@@ -52,13 +52,16 @@ func main() {
 		triangles = make(map[[3]int]bool)
 		for id0 := 0; id0 < numSegments; id0++ {
 			for id1, _ := range segments[id0].intersections {
+				if id0 == id1 {
+					continue
+				}
 				for id2, _ := range segments[id1].intersections {
 
 					if _, found := segments[id2].intersections[id0]; !found {
 						continue
 					}
 
-					if id0 == id2 || id1 == id2 || id0 == id1 {
+					if id0 == id2 || id1 == id2 {
 						continue
 					}
 
