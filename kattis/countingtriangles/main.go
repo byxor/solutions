@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 var numSegments int
@@ -11,14 +13,19 @@ var triangles map[[3]int]bool
 var numTriangles int
 
 var lowId, midId, highId int
+var o1, o2, o3, o4 int
+
+var scanner *bufio.Scanner
 
 func main() {
+	scanner = bufio.NewScanner(os.Stdin)
 	for {
 		// Set initial variables
 		numTriangles = 0
 
 		// Get initial input
-		fmt.Scan(&numSegments)
+		scanner.Scan()
+		fmt.Sscan(scanner.Text(), &numSegments)
 		if numSegments == 0 {
 			return
 		}
@@ -26,7 +33,9 @@ func main() {
 		// Read line segments
 		for i := 0; i < numSegments; i++ {
 			segments[i] = lineSegment{id: i, intersections: make(map[int]bool)}
-			fmt.Scanf("%f %f %f %f\n", &segments[i].ax, &segments[i].ay, &segments[i].bx, &segments[i].by)
+			scanner.Scan()
+			fmt.Sscanf(scanner.Text(), "%f %f %f %f\n", &segments[i].ax, &segments[i].ay, &segments[i].bx, &segments[i].by)
+
 		}
 
 		// Gather intersection information
@@ -124,10 +133,10 @@ const (
 )
 
 func intersects(id0, id1 int) bool {
-	o1 := orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
-	o2 := orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
-	o3 := orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
-	o4 := orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by)
+	o1 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
+	o2 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
+	o3 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
+	o4 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by)
 
 	if (o1 != o2) && (o3 != o4) {
 		return true
