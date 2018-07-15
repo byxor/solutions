@@ -6,15 +6,27 @@ import (
 	"os"
 )
 
-var numSegments int
+type identifier byte
+
+type lineSegment struct {
+	id             identifier
+	ax, ay, bx, by float64
+	intersections  map[identifier]bool
+}
+
+type triangle [3]identifier
+
+var numSegments identifier
 var segments [50]lineSegment
 
-var triangles map[[3]int]bool
+var triangles map[triangle]bool
 var numTriangles int
 
-var lowId, midId, highId int
+var lowId, midId, highId identifier
 var o1, o2, o3, o4 int
 var val float64
+
+var id0, id1, id2 identifier
 
 var scanner *bufio.Scanner
 
@@ -34,16 +46,15 @@ func main() {
 		}
 
 		// Read line segments
-		for i := 0; i < numSegments; i++ {
-			segments[i] = lineSegment{id: i, intersections: make(map[int]bool)}
+		for id0 = 0; id0 < numSegments; id0++ {
+			segments[id0] = lineSegment{id: id0, intersections: make(map[identifier]bool)}
 			scanner.Scan()
-			fmt.Sscanf(scanner.Text(), "%f %f %f %f", &segments[i].ax, &segments[i].ay, &segments[i].bx, &segments[i].by)
-
+			fmt.Sscanf(scanner.Text(), "%f %f %f %f", &segments[id0].ax, &segments[id0].ay, &segments[id0].bx, &segments[id0].by)
 		}
 
 		// Gather intersection information
-		for id0 := 0; id0 < numSegments; id0++ {
-			for id1 := 0; id1 < numSegments; id1++ {
+		for id0 = 0; id0 < numSegments; id0++ {
+			for id1 = 0; id1 < numSegments; id1++ {
 				if id0 == id1 {
 					continue
 				}
@@ -61,8 +72,8 @@ func main() {
 		}
 
 		// Search for triangles
-		triangles = make(map[[3]int]bool)
-		for id0 := 0; id0 < numSegments; id0++ {
+		triangles = make(map[triangle]bool)
+		for id0 = 0; id0 < numSegments; id0++ {
 			for id1, _ := range segments[id0].intersections {
 				if id0 == id1 {
 					continue
@@ -108,11 +119,11 @@ func main() {
 						}
 					}
 
-					if _, found = triangles[[3]int{lowId, midId, highId}]; found {
+					if _, found = triangles[triangle{lowId, midId, highId}]; found {
 						continue
 					}
 
-					triangles[[3]int{lowId, midId, highId}] = true
+					triangles[triangle{lowId, midId, highId}] = true
 					numTriangles++
 				}
 			}
@@ -120,12 +131,6 @@ func main() {
 
 		fmt.Println(numTriangles)
 	}
-}
-
-type lineSegment struct {
-	id             int
-	ax, ay, bx, by float64
-	intersections  map[int]bool
 }
 
 // INTERSECTION JUNK
@@ -136,7 +141,7 @@ const (
 	counterclockwise
 )
 
-func intersects(id0, id1 int) bool {
+func intersects(id0, id1 identifier) bool {
 	o1 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
 	o2 = orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
 	o3 = orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
