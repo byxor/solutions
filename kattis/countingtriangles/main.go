@@ -38,7 +38,7 @@ func main() {
 					continue
 				}
 
-				if intersects(segments[id0], segments[id1]) {
+				if intersects(id0, id1) {
 					segments[id0].intersections[id1] = true
 					segments[id1].intersections[id0] = true
 				}
@@ -116,29 +116,29 @@ const (
 	counterclockwise
 )
 
-func intersects(segmentA, segmentB lineSegment) bool {
-	o1 := orientation(segmentA.ax, segmentA.ay, segmentA.bx, segmentA.by, segmentB.ax, segmentB.ay)
-	o2 := orientation(segmentA.ax, segmentA.ay, segmentA.bx, segmentA.by, segmentB.bx, segmentB.by)
-	o3 := orientation(segmentB.ax, segmentB.ay, segmentB.bx, segmentB.by, segmentA.ax, segmentA.ay)
-	o4 := orientation(segmentB.ax, segmentB.ay, segmentB.bx, segmentB.by, segmentA.bx, segmentA.by)
+func intersects(id0, id1 int) bool {
+	o1 := orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].ax, segments[id1].ay)
+	o2 := orientation(segments[id0].ax, segments[id0].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by)
+	o3 := orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].ax, segments[id0].ay)
+	o4 := orientation(segments[id1].ax, segments[id1].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by)
 
 	if (o1 != o2) && (o3 != o4) {
 		return true
 	}
 
-	if (o1 == colinear) && onSegment(segmentA.ax, segmentA.ay, segmentB.ax, segmentB.ay, segmentA.bx, segmentA.by) {
+	if (o1 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by) {
 		return true
 	}
 
-	if (o2 == colinear) && onSegment(segmentA.ax, segmentA.ay, segmentB.bx, segmentB.by, segmentA.bx, segmentA.by) {
+	if (o2 == colinear) && onSegment(segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by, segments[id0].bx, segments[id0].by) {
 		return true
 	}
 
-	if (o3 == colinear) && onSegment(segmentB.ax, segmentB.ay, segmentA.ax, segmentA.ay, segmentB.bx, segmentB.by) {
+	if (o3 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].ax, segments[id0].ay, segments[id1].bx, segments[id1].by) {
 		return true
 	}
 
-	if (o4 == colinear) && onSegment(segmentB.ax, segmentB.ay, segmentA.bx, segmentA.by, segmentB.bx, segmentB.by) {
+	if (o4 == colinear) && onSegment(segments[id1].ax, segments[id1].ay, segments[id0].bx, segments[id0].by, segments[id1].bx, segments[id1].by) {
 		return true
 	}
 
