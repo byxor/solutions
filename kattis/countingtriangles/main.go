@@ -7,7 +7,7 @@ import (
 )
 
 type identifier byte
-type real float64
+type real float32
 
 type lineSegment struct {
 	id             identifier
