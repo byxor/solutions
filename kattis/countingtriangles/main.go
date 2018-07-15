@@ -94,10 +94,6 @@ func main() {
 	}
 }
 
-type point struct {
-	x, y float64
-}
-
 type lineSegment struct {
 	id             int
 	ax, ay, bx, by float64
@@ -149,32 +145,45 @@ func orientation(px, py, qx, qy, rx, ry float64) int {
 	val := ((qy - py) * (rx - qx)) - ((qx - px) * (ry - qy))
 	if val == 0 {
 		return colinear
-	}
-	if val > 0 {
+	} else if val > 0 {
 		return clockwise
+	} else {
+		return counterclockwise
 	}
-	return counterclockwise
 }
 
 func onSegment(px, py, qx, qy, rx, ry float64) bool {
-	if (qx <= max(px, rx)) && (qx >= min(px, rx)) && (qy <= max(py, ry)) && (qy >= min(py, ry)) {
-		return true
-	}
-	return false
-}
 
-func max(a, b float64) float64 {
-	if a > b {
-		return a
+	var highpxrx, lowpxrx float64
+	if px > rx {
+		highpxrx = px
+		lowpxrx = rx
 	} else {
-		return b
+		highpxrx = rx
+		lowpxrx = px
 	}
-}
 
-func min(a, b float64) float64 {
-	if a < b {
-		return a
-	} else {
-		return b
+	if qx > highpxrx {
+		return false
+	} else if qx < lowpxrx {
+		return false
 	}
+
+	var highpyry, lowpyry float64
+	if py > ry {
+		highpyry = py
+		lowpyry = ry
+	} else {
+		highpyry = ry
+		lowpyry = py
+	}
+
+	if qy > highpyry {
+		return false
+	} else if qy < lowpyry {
+		return false
+	}
+
+	return true
+
 }
