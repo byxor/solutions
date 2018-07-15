@@ -42,10 +42,25 @@ func main() {
 			segments[i] = segboi
 		}
 
-		calculateIntersections(segments)
+		for _, segmentA := range segments {
+			for _, segmentB := range segments {
+				if segmentA.id == segmentB.id {
+					continue
+				}
+
+				if segmentA.intersects(&segmentB) {
+					continue
+				}
+
+				if intersects(&segmentA, &segmentB) {
+					segmentA.intersections[segmentB.id] = true
+					segmentB.intersections[segmentA.id] = true
+				}
+			}
+		}
 
 		triangles := make(map[triangle]bool)
-
+		numTriangles := 0
 		for id0 := 0; id0 < numSegments; id0++ {
 			segment := segments[id0]
 			for id1, _ := range segment.intersections {
@@ -83,36 +98,18 @@ func main() {
 					}
 
 					triangles[triangle{id0, id1, id2}] = true
+					numTriangles++
 				}
 			}
 		}
 
-		fmt.Println(len(triangles))
+		fmt.Println(numTriangles)
 	}
 }
 
 func (ls *lineSegment) intersects(other *lineSegment) bool {
 	_, found := ls.intersections[other.id]
 	return found
-}
-
-func calculateIntersections(segments []lineSegment) {
-	for _, segmentA := range segments {
-		for _, segmentB := range segments {
-			if segmentA.id == segmentB.id {
-				continue
-			}
-
-			if segmentA.intersects(&segmentB) {
-				continue
-			}
-
-			if intersects(&segmentA, &segmentB) {
-				segmentA.intersections[segmentB.id] = true
-				segmentB.intersections[segmentA.id] = true
-			}
-		}
-	}
 }
 
 // INTERSECTION JUNK
