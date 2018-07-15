@@ -71,10 +71,11 @@ func main() {
 						continue
 					}
 
-					if id0 == id2 || id1 == id2 {
+					if id0 == id2 {
 						continue
 					}
 
+					// sort ids
 					if id0 < id1 {
 						if id1 < id2 {
 							lowId = id0
