@@ -2,68 +2,80 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
-	"strings"
 )
 
+const (
+	max = 1000000
+)
+
+var scanner = bufio.NewScanner(os.Stdin)
+var jack, jill [max]int
+
+var line string
+var numJack, numJill int
+
+var cd int64
+
+var count int
+var x, y int
+var space int
+var i int
+
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-
 	for {
-		var line string
-		var numJack, numJill int
+		scanner.Scan()
+		line = scanner.Text()
 
-		line, _ = reader.ReadString('\n')
-		fmt.Sscanf(line, "%d %d", &numJack, &numJill)
-		// fmt.Println(numJack, numJill)
+		for space = 0; space < len(line); space++ {
+			if line[space] == 32 {
+				break
+			}
+		}
+
+		numJack, _ = strconv.Atoi(line[:space])
+		numJill, _ = strconv.Atoi(line[space+1:])
+
+		// fmt.Printf("numjack=%d numjill=%d\n", numJack, numJill)
 
 		if numJack == 0 && numJill == 0 {
 			break
 		}
 
-		jack := make([]int, numJack)
-		readCds(reader, jack, numJack)
+		for i = 0; i < numJack; i++ {
+			scanner.Scan()
+			cd, _ = strconv.ParseInt(scanner.Text(), 10, 32)
+			jack[i] = int(cd)
+		}
 
-		jill := make([]int, numJill)
-		readCds(reader, jill, numJill)
+		for i = 0; i < numJill; i++ {
+			scanner.Scan()
+			cd, _ = strconv.ParseInt(scanner.Text(), 10, 32)
+			jill[i] = int(cd)
+		}
 
-		// fmt.Println(jack, jill)
+		// fmt.Println(jack[:numJack], jill[:numJill])
 
-		var count int
-		var x, y int
-
-		var a, b int
+		count = 0
+		x = 0
+		y = 0
 
 		for {
 			if x >= numJack || y >= numJill {
 				break
-			}
-
-			a = jack[x]
-			b = jill[y]
-
-			// fmt.Printf("x=%d y=%d a=%d b=%d c=%d\n", x, y, a, b, count)
-			if a == b {
+			} else if jack[x] == jill[y] {
 				count++
 				x++
 				y++
-			} else if a > b {
+			} else if jack[x] > jill[y] {
 				y++
 			} else {
 				x++
 			}
 		}
 
-		fmt.Println(count)
-	}
-}
-
-func readCds(reader *bufio.Reader, cds []int, num int) {
-	for i := 0; i < num; i++ {
-		line, _ := reader.ReadString('\n')
-		cd, _ := strconv.ParseInt(strings.TrimSuffix(line, "\n"), 10, 64)
-		cds[i] = int(cd)
+		os.Stdout.Write([]byte(strconv.Itoa(count)))
+		os.Stdout.Write([]byte{10})
 	}
 }
