@@ -1,1 +1,8 @@
-char*M="no hiss\n";char m[31];main(){scanf("%s",m);int i,s=0;for(;i<31;){if(m[i]==0||s>=2)break;if(m[i++]=='s')s++;else s=0;}printf(s>=2?M+3:M);}
+char*M="no hiss",m[31],i,s=0;
+main(){
+ gets(m);
+ for(;m[i]&&s<2;){
+  s=m[i++]^'s'?0:s+1;
+ }
+ puts(M+(s>1)*3);
+}
